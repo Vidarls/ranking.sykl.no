@@ -9,7 +9,7 @@ namespace ranking.sykl.no
     {
         public testmodul()
         {
-            Get["/"] = _ =>  "<h1>Hurra for ranking.sykl.no</h1>";
+            Get["/"] = _ =>  "<h1>Hurra for ranking.sykl.no på appharbor</h1>";
         }
 
     }
