@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Nancy;
 
 namespace ranking.sykl.no
 {
-    public class testmodul : Nancy.NancyModule
+    public class Start : NancyModule
     {
-        public testmodul()
+        public Start()
         {
-            Get["/"] = _ =>  "<h1>Hurra for ranking.sykl.no på appharbor</h1>";
+            Get["/"] = _ => View["Start"];
         }
-
     }
 }

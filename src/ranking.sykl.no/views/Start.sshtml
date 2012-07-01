@@ -1,0 +1,5 @@
+﻿@Master['Main']
+
+@Section['Content']
+	<p>Velkommen</p>
+@EndSection

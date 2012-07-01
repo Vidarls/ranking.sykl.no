@@ -1,0 +1,11 @@
+﻿<div class="nav-collapse">
+  <ul class="nav">
+    <li class="active">
+      <a href="#">Home</a>
+    </li>
+    <li>
+      <a href="/ritt/nytt">Opprett ritt</a>
+    </li>
+  </ul>
+</div>
+<!--/.nav-collapse -->
