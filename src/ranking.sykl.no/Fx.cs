@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Raven.Client;
+//using Raven.Client;
 
 namespace ranking.sykl.no
 {
@@ -124,85 +124,85 @@ namespace ranking.sykl.no
         }
     }
 
-    public class RavenDbEventStore : IEventStore
-    {
-        private class Stream
-        {
-            public string Id { get; private set; }
-            public long CurrentSequence { get; private set; }
+    //public class RavenDbEventStore : IEventStore
+    //{
+    //    private class Stream
+    //    {
+    //        public string Id { get; private set; }
+    //        public long CurrentSequence { get; private set; }
 
-            public Stream(string streamId, long currentSequence)
-            {
-                Id = streamId;
-                CurrentSequence = currentSequence;
-            }
+    //        public Stream(string streamId, long currentSequence)
+    //        {
+    //            Id = streamId;
+    //            CurrentSequence = currentSequence;
+    //        }
 
-            public void UpdateSequence(long sequence)
-            {
-                CurrentSequence = sequence;
-            }
-        }
+    //        public void UpdateSequence(long sequence)
+    //        {
+    //            CurrentSequence = sequence;
+    //        }
+    //    }
 
-        private class EventWrapper
-        {
-            public string Id { get; private set; }
-            public string StreamId { get; private set; }
-            public long Sequence { get; private set; }
-            public object EventData { get; private set; }
+    //    private class EventWrapper
+    //    {
+    //        public string Id { get; private set; }
+    //        public string StreamId { get; private set; }
+    //        public long Sequence { get; private set; }
+    //        public object EventData { get; private set; }
 
-            public EventWrapper(object streamId, object @event, long sequence)
-            {
-                StreamId = streamId.ToString();
-                EventData = @event;
-                Sequence = sequence;
-                Id = string.Format("{0}/{1}", StreamId, Sequence);
-            }
+    //        public EventWrapper(object streamId, object @event, long sequence)
+    //        {
+    //            StreamId = streamId.ToString();
+    //            EventData = @event;
+    //            Sequence = sequence;
+    //            Id = string.Format("{0}/{1}", StreamId, Sequence);
+    //        }
 
-            private EventWrapper() { } // needed for hydration from RavenDB 
-        }
+    //        private EventWrapper() { } // needed for hydration from RavenDB 
+    //    }
 
-        readonly IDocumentStore _db;
-        readonly IPublisher _publisher;
+    //    readonly IDocumentStore _db;
+    //    readonly IPublisher _publisher;
 
-        public RavenDbEventStore(IDocumentStore db, IPublisher publisher)
-        {
-            _db = db;
-            _publisher = publisher;
-        }
+    //    public RavenDbEventStore(IDocumentStore db, IPublisher publisher)
+    //    {
+    //        _db = db;
+    //        _publisher = publisher;
+    //    }
 
-        public void StoreEvents(object streamId, IEnumerable<object> events, long expectedInitialVersion)
-        {
-            var stringId = streamId.ToString();
-            var eventList = events.ToList();
+    //    public void StoreEvents(object streamId, IEnumerable<object> events, long expectedInitialVersion)
+    //    {
+    //        var stringId = streamId.ToString();
+    //        var eventList = events.ToList();
 
-            using (var session = _db.OpenSession())
-            {
-                session.Advanced.UseOptimisticConcurrency = true;
+    //        using (var session = _db.OpenSession())
+    //        {
+    //            session.Advanced.UseOptimisticConcurrency = true;
 
-                var streamInfo = session.Load<Stream>(stringId);
-                if (streamInfo != null && streamInfo.CurrentSequence > expectedInitialVersion)
-                    throw new ConcurrencyException();
+    //            var streamInfo = session.Load<Stream>(stringId);
+    //            if (streamInfo != null && streamInfo.CurrentSequence > expectedInitialVersion)
+    //                throw new ConcurrencyException();
 
-                var nextVersion = expectedInitialVersion;
-                eventList.ForEach(x => session.Store(new EventWrapper(streamId, x, ++nextVersion)));
+    //            var nextVersion = expectedInitialVersion;
+    //            eventList.ForEach(x => session.Store(new EventWrapper(streamId, x, ++nextVersion)));
 
-                if (streamInfo == null) session.Store(new Stream(stringId, nextVersion));
-                else streamInfo.UpdateSequence(nextVersion);
+    //            if (streamInfo == null) session.Store(new Stream(stringId, nextVersion));
+    //            else streamInfo.UpdateSequence(nextVersion);
 
-                session.SaveChanges();
-            }
+    //            session.SaveChanges();
+    //        }
 
-            _publisher.Publish(eventList);
-        }
+    //        _publisher.Publish(eventList);
+    //    }
 
-        public IEnumerable<object> LoadEvents(object streamId, long version = 0)
-        {
-            using (var session = _db.OpenSession())
-                return session.Query<EventWrapper>().Where(x => x.StreamId == streamId.ToString() && x.Sequence >= version).OrderBy(x => x.Sequence).ToList().Select(x => x.EventData);
-        }
+    //    public IEnumerable<object> LoadEvents(object streamId, long version = 0)
+    //    {
+    //        using (var session = _db.OpenSession())
+    //            return session.Query<EventWrapper>().Where(x => x.StreamId == streamId.ToString() && x.Sequence >= version).OrderBy(x => x.Sequence).ToList().Select(x => x.EventData);
+    //    }
 
-        public class ConcurrencyException : Exception { }
-    }
+    //    public class ConcurrencyException : Exception { }
+    //}
 
     public class MessageBus : IPublisher, ICommandService
     {
